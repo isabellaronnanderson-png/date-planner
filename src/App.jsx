@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import SavedPlacesTab from './pages/SavedPlacesTab';
 import PlanTab from './pages/PlanTab';
 import { getPlaces, addPlace, updatePlace, deletePlace, getCities } from './lib/storage';
+import { SquiggleUnderline } from './components/icons';
 
 const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
@@ -44,7 +45,8 @@ export default function App() {
           <span>Vol. I, single edition</span>
           <span>{today}</span>
         </div>
-        <h1 className="masthead-title">DISPATCH</h1>
+        <h1 className="masthead-title">Dispatch</h1>
+        <SquiggleUnderline className="masthead-doodle" />
         <div className="masthead-tagline">A guide to the perfect day out</div>
 
         <nav className="tab-row">

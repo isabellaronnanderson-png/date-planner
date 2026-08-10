@@ -1,28 +1,26 @@
 import CategoryStamp from './CategoryStamp';
 import { isClosingSoon, daysUntil } from '../lib/planGenerator';
+import { categoryMeta } from '../lib/categories';
 
 export default function PlaceCard({ place, onToggleFavorite, onToggleVisited, onDelete }) {
   const closing = isClosingSoon(place);
   const daysLeft = daysUntil(place.exhibitionEndDate);
+  const meta = categoryMeta(place.category);
 
   return (
-    <div className="ticket">
-      {closing && (
-        <div className="stamp-closing">
-          closing in {daysLeft}d
-        </div>
-      )}
+    <div className="place-card" style={{ '--accent': `var(${meta.cssVar})` }}>
+      {closing && <div className="closing-pill">closing in {daysLeft}d</div>}
 
-      <div className="ticket-top">
+      <div className="place-card-top">
         <div>
-          <div className="ticket-name">{place.name}</div>
-          <div className="ticket-meta">
+          <div className="place-name">{place.name}</div>
+          <div className="place-meta">
             <span>{place.city}</span>
-            {place.cost != null && place.cost !== '' && <span>~${place.cost}</span>}
+            {place.cost != null && place.cost !== '' && <span>· ~${place.cost}</span>}
           </div>
         </div>
         <button
-          className={`ticket-fav-btn ${place.favorite ? 'active' : ''}`}
+          className={`fav-btn ${place.favorite ? 'active' : ''}`}
           onClick={() => onToggleFavorite(place.id)}
           title={place.favorite ? 'Remove from favorites' : 'Mark as favorite'}
           aria-label="Toggle favorite"
@@ -31,19 +29,17 @@ export default function PlaceCard({ place, onToggleFavorite, onToggleVisited, on
         </button>
       </div>
 
-      <div className="ticket-perf" />
-
       <CategoryStamp category={place.category} />
 
       {place.exhibitionEndDate && (
-        <div className="ticket-meta" style={{ marginTop: 6 }}>
+        <div className="place-meta" style={{ marginTop: 8 }}>
           on view through {place.exhibitionEndDate}
         </div>
       )}
 
-      {place.notes && <div className="ticket-notes">{place.notes}</div>}
+      {place.notes && <div className="place-notes">{place.notes}</div>}
 
-      <div className="ticket-actions">
+      <div className="place-actions">
         <button
           className={`btn btn-sm ${place.visited ? '' : 'btn-ghost'}`}
           onClick={() => onToggleVisited(place.id)}
