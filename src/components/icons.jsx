@@ -69,6 +69,46 @@ export function DrinksIcon(props) {
   );
 }
 
+// A loose hand-drawn illustration for the side margin of the page —
+// a compass, a paper-plane trail, a coffee cup and a couple of stars,
+// scattered like doodles in a travel notebook.
+export function SideDoodle(props) {
+  return (
+    <svg viewBox="0 0 100 480" fill="none" {...props}>
+      {/* compass */}
+      <circle cx="46" cy="60" r="30" stroke="currentColor" strokeWidth="2.2" />
+      <path d="M46 34 L54 58 L46 86 L38 58 Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <circle cx="46" cy="60" r="3" fill="currentColor" />
+      <path d="M46 22 v8 M46 90 v8 M8 60 h8 M76 60 h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+
+      {/* dotted trail */}
+      <path
+        d="M46 100 C 20 140, 70 170, 40 205 S 20 260, 55 290"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeDasharray="1 10"
+        strokeLinecap="round"
+      />
+
+      {/* paper plane */}
+      <path d="M14 240 L58 222 L38 268 L30 248 L14 240 Z" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
+      <path d="M30 248 L58 222" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+
+      {/* coffee cup */}
+      <path d="M24 330 h34 l-2 26 a15 15 0 0 1 -15 13 h-0 a15 15 0 0 1 -15 -13 z" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
+      <path d="M58 336 h8 a8 8 0 0 1 1 16 h-7" stroke="currentColor" strokeWidth="2.2" />
+      <path d="M32 320 q2 -5 -1 -9 M42 320 q2 -5 -1 -9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+
+      {/* stars */}
+      <path d="M78 300 l2.4 5 5 2.4 -5 2.4 -2.4 5 -2.4 -5 -5 -2.4 5 -2.4 Z" fill="currentColor" />
+      <path d="M18 410 l1.8 3.8 3.8 1.8 -3.8 1.8 -1.8 3.8 -1.8 -3.8 -3.8 -1.8 3.8 -1.8 Z" fill="currentColor" />
+
+      {/* closing squiggle */}
+      <path d="M20 430 C 40 420, 55 445, 75 432" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 // A loose hand-drawn underline squiggle, used beneath the wordmark.
 export function SquiggleUnderline(props) {
   return (

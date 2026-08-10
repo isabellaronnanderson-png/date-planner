@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import SavedPlacesTab from './pages/SavedPlacesTab';
 import PlanTab from './pages/PlanTab';
 import { getPlaces, addPlace, updatePlace, deletePlace, getCities } from './lib/storage';
-import { SquiggleUnderline } from './components/icons';
+import { SquiggleUnderline, SideDoodle } from './components/icons';
 
 const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
@@ -39,7 +39,9 @@ export default function App() {
   const cities = getCities();
 
   return (
-    <div className="app-shell">
+    <>
+      <SideDoodle className="side-doodle left" />
+      <div className="app-shell">
       <header className="masthead">
         <div className="masthead-top">
           <span>Vol. I, single edition</span>
@@ -72,6 +74,8 @@ export default function App() {
         )}
         {tab === 'plan' && <PlanTab places={places} cities={cities} />}
       </main>
-    </div>
+      </div>
+      <SideDoodle className="side-doodle right" />
+    </>
   );
 }
