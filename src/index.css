@@ -1,0 +1,613 @@
+/* ============================================================
+   DISPATCH — design tokens
+   Editorial travel-zine aesthetic: postcards, ticket stubs,
+   postage-stamp category marks, ink-stamp annotations.
+   ============================================================ */
+
+:root {
+  /* paper + ink */
+  --paper: #e7ddc2;         /* masthead / page background — aged linen paper */
+  --paper-light: #f4eeda;   /* card stock — lighter, cleaner */
+  --paper-deep: #dcd0ac;    /* recessed panels, input wells */
+  --ink: #21301f;           /* primary text — deep forest-ink, not pure black */
+  --ink-soft: #5c6152;      /* secondary text */
+  --line: #b9ab7e;          /* rules, dashed perforation, borders */
+  --line-soft: #d3c69a;
+
+  /* accents — each a "stamp" color, used sparingly and specifically */
+  --red: #a23c2c;           /* postage-stamp red — primary actions, dinner */
+  --red-ink: #7c2c1f;
+  --teal: #3c6e6a;          /* travel-poster teal — day activity, links */
+  --indigo: #2e3a52;        /* deep dusk indigo — night activity */
+  --gold: #b8863a;          /* mustard gold — breakfast, closing-soon stamp */
+  --plum: #6d3f57;          /* drinks */
+
+  /* type */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Work Sans', -apple-system, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+
+  --radius: 3px;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(33,48,31,0.05) 1px, transparent 0);
+  background-size: 14px 14px;
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+input, select, textarea {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+}
+
+a { color: var(--teal); }
+
+::selection { background: var(--gold); color: var(--paper-light); }
+
+/* ------------------------------------------------------------
+   Layout shell
+   ------------------------------------------------------------ */
+
+.app-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px 80px;
+}
+
+@media (max-width: 640px) {
+  .app-shell { padding: 0 14px 60px; }
+}
+
+/* ------------------------------------------------------------
+   Masthead — newspaper/zine header
+   ------------------------------------------------------------ */
+
+.masthead {
+  padding: 36px 0 18px;
+  border-bottom: 3px double var(--ink);
+  margin-bottom: 22px;
+}
+
+.masthead-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 10px;
+}
+
+.masthead-title {
+  font-size: clamp(2.6rem, 8vw, 4.2rem);
+  text-align: center;
+  line-height: 0.95;
+  margin: 4px 0 6px;
+}
+
+.masthead-tagline {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* Tabs styled as ticket stubs */
+.tab-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.tab-stub {
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 9px 20px;
+  background: var(--paper-light);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.tab-stub::before, .tab-stub::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.tab-stub::before { left: -5px; }
+.tab-stub::after { right: -5px; }
+
+.tab-stub:hover { transform: translateY(-1px); }
+
+.tab-stub.active {
+  background: var(--ink);
+  color: var(--paper-light);
+  border-color: var(--ink);
+}
+.tab-stub.active::before, .tab-stub.active::after {
+  background: var(--ink);
+}
+
+/* ------------------------------------------------------------
+   Section headers
+   ------------------------------------------------------------ */
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 34px 0 16px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+}
+
+.section-head h2 {
+  font-size: 1.5rem;
+}
+
+.section-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* ------------------------------------------------------------
+   Buttons
+   ------------------------------------------------------------ */
+
+.btn {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 10px 18px;
+  border: 1.5px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  border-radius: var(--radius);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.btn:hover { background: var(--ink); color: var(--paper-light); }
+
+.btn-primary {
+  background: var(--red);
+  border-color: var(--red-ink);
+  color: var(--paper-light);
+}
+.btn-primary:hover { background: var(--red-ink); }
+
+.btn-ghost {
+  border-color: var(--line);
+  color: var(--ink-soft);
+}
+.btn-ghost:hover { background: var(--paper-deep); color: var(--ink); }
+
+.btn-sm { padding: 6px 12px; font-size: 0.68rem; }
+
+.btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+.btn[disabled]:hover { background: transparent; color: var(--ink); }
+
+/* ------------------------------------------------------------
+   Form fields
+   ------------------------------------------------------------ */
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+
+.field label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.field input, .field select, .field textarea {
+  padding: 9px 11px;
+  background: var(--paper-light);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--ink);
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: 2px solid var(--teal);
+  outline-offset: 1px;
+  border-color: var(--teal);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 520px) {
+  .field-row { grid-template-columns: 1fr; }
+}
+
+/* ------------------------------------------------------------
+   Category stamps
+   ------------------------------------------------------------ */
+
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px 3px 6px;
+  border-radius: 2px;
+  color: var(--paper-light);
+  white-space: nowrap;
+}
+
+.stamp-breakfast { background: var(--gold); }
+.stamp-activity-day { background: var(--teal); }
+.stamp-activity-night { background: var(--indigo); }
+.stamp-dinner { background: var(--red); }
+.stamp-drinks { background: var(--plum); }
+
+/* ------------------------------------------------------------
+   Place card — the ticket stub / postcard signature element
+   ------------------------------------------------------------ */
+
+.ticket-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 22px;
+}
+
+.ticket {
+  position: relative;
+  background: var(--paper-light);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 16px 16px 14px;
+  box-shadow: 3px 3px 0 rgba(33, 48, 31, 0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ticket:hover {
+  transform: translateY(-2px);
+  box-shadow: 4px 5px 0 rgba(33, 48, 31, 0.16);
+}
+
+/* perforation between the "stub" header and body */
+.ticket-perf {
+  position: relative;
+  height: 1px;
+  margin: 12px -16px 12px;
+  border-top: 1.5px dashed var(--line);
+}
+.ticket-perf::before, .ticket-perf::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.ticket-perf::before { left: -6px; }
+.ticket-perf::after { right: -6px; }
+
+.ticket-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.ticket-name {
+  font-size: 1.15rem;
+  line-height: 1.15;
+}
+
+.ticket-meta {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-top: 8px;
+}
+
+.ticket-notes {
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+.ticket-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.ticket-fav-btn {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 2px;
+  color: var(--line);
+}
+.ticket-fav-btn.active { color: var(--red); }
+
+/* closing-soon ink stamp */
+.stamp-closing {
+  position: absolute;
+  top: 10px;
+  right: -6px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--red);
+  border: 2px solid var(--red);
+  border-radius: 3px;
+  padding: 3px 6px;
+  transform: rotate(8deg);
+  opacity: 0.85;
+  background: rgba(244, 238, 218, 0.85);
+}
+
+/* ------------------------------------------------------------
+   Empty state
+   ------------------------------------------------------------ */
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--ink-soft);
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius);
+}
+.empty-state h3 {
+  font-size: 1.3rem;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+/* ------------------------------------------------------------
+   Plan generator panel
+   ------------------------------------------------------------ */
+
+.panel {
+  background: var(--paper-light);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: 3px 3px 0 rgba(33, 48, 31, 0.1);
+}
+
+.toggle-pair {
+  display: inline-flex;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.toggle-pair button {
+  border: none;
+  background: var(--paper-light);
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 9px 18px;
+}
+.toggle-pair button.active {
+  background: var(--ink);
+  color: var(--paper-light);
+}
+.toggle-pair button + button { border-left: 1.5px solid var(--ink); }
+
+/* ------------------------------------------------------------
+   Generated itinerary — the "issue" layout
+   ------------------------------------------------------------ */
+
+.itinerary {
+  margin-top: 26px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--paper-light);
+  overflow: hidden;
+}
+
+.itinerary-head {
+  background: var(--ink);
+  color: var(--paper-light);
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.itinerary-head h3 {
+  font-size: 1.2rem;
+  color: var(--paper-light);
+}
+
+.itinerary-head .meta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.itinerary-stops {
+  padding: 4px 0;
+}
+
+.stop-row {
+  display: flex;
+  gap: 16px;
+  padding: 16px 20px;
+  align-items: flex-start;
+}
+.stop-row + .stop-row {
+  border-top: 1.5px dashed var(--line);
+}
+
+.stop-slot {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  width: 78px;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.stop-body { flex: 1; }
+.stop-name { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; }
+.stop-meta {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+
+.itinerary-foot {
+  padding: 12px 20px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.no-plan-note {
+  margin-top: 20px;
+  padding: 16px 18px;
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------------
+   Modal / add-place drawer
+   ------------------------------------------------------------ */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(33, 48, 31, 0.45);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+  overflow-y: auto;
+  z-index: 50;
+}
+
+.modal {
+  background: var(--paper-light);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 24px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 6px 6px 0 rgba(33, 48, 31, 0.18);
+}
+
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.close-x {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: var(--ink-soft);
+  line-height: 1;
+}
+
+.stack { display: flex; flex-direction: column; gap: 14px; }
+
+.autocomplete-wrap { position: relative; }
+.autocomplete-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--paper-light);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 3px 4px 0 rgba(33, 48, 31, 0.14);
+}
+.autocomplete-item {
+  padding: 9px 11px;
+  font-size: 0.88rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+.autocomplete-item:last-child { border-bottom: none; }
+.autocomplete-item:hover { background: var(--paper-deep); }
+
+.hint {
+  font-size: 0.76rem;
+  color: var(--ink-soft);
+}
