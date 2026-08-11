@@ -2,9 +2,8 @@ import { useEffect, useState } from 'react';
 import SavedPlacesTab from './pages/SavedPlacesTab';
 import PlanTab from './pages/PlanTab';
 import { getPlaces, addPlace, updatePlace, deletePlace, getCities } from './lib/storage';
-import { SquiggleUnderline, SideDoodle } from './components/icons';
 
-const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+const today = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
 export default function App() {
   const [tab, setTab] = useState('saved');
@@ -38,18 +37,22 @@ export default function App() {
 
   const cities = getCities();
 
+  const teaser =
+    places.length === 0
+      ? 'Start your collection — save a few favorite spots, then let Dispatch plan the day.'
+      : `Featuring ${places.length} saved ${places.length === 1 ? 'spot' : 'spots'} across ${cities.length} ${cities.length === 1 ? 'city' : 'cities'}${cities.length > 0 ? `, from ${cities.slice(0, 3).join(' to ')}` : ''} — plan your next perfect day below.`;
+
   return (
-    <>
-      <SideDoodle className="side-doodle left" />
-      <div className="app-shell">
+    <div className="app-shell">
       <header className="masthead">
         <div className="masthead-top">
-          <span>Vol. I, single edition</span>
+          <span>Issue 01</span>
           <span>{today}</span>
         </div>
+
         <h1 className="masthead-title">Dispatch</h1>
-        <SquiggleUnderline className="masthead-doodle" />
-        <div className="masthead-tagline">A guide to the perfect day out</div>
+        <div className="masthead-rule" />
+        <p className="masthead-teaser">{teaser}</p>
 
         <nav className="tab-row">
           <button className={`tab-stub ${tab === 'saved' ? 'active' : ''}`} onClick={() => setTab('saved')}>
@@ -59,6 +62,15 @@ export default function App() {
             Plan a day
           </button>
         </nav>
+
+        <div className="masthead-foot">
+          <div className="barcode" aria-hidden="true">
+            {Array.from({ length: 28 }).map((_, i) => (
+              <span key={i} style={{ width: (i * 7) % 3 === 0 ? 3 : 1.5 }} />
+            ))}
+          </div>
+          <span className="masthead-foot-label">dispatch · single edition</span>
+        </div>
       </header>
 
       <main>
@@ -74,8 +86,6 @@ export default function App() {
         )}
         {tab === 'plan' && <PlanTab places={places} cities={cities} />}
       </main>
-      </div>
-      <SideDoodle className="side-doodle right" />
-    </>
+    </div>
   );
 }

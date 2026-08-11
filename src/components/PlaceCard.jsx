@@ -13,6 +13,7 @@ export default function PlaceCard({ place, onToggleFavorite, onToggleVisited, on
 
       <div className="place-card-top">
         <div>
+          <CategoryStamp category={place.category} />
           <div className="place-name">{place.name}</div>
           <div className="place-meta">
             <span>{place.city}</span>
@@ -28,8 +29,6 @@ export default function PlaceCard({ place, onToggleFavorite, onToggleVisited, on
           {place.favorite ? '♥' : '♡'}
         </button>
       </div>
-
-      <CategoryStamp category={place.category} />
 
       {place.exhibitionEndDate && (
         <div className="place-meta" style={{ marginTop: 8 }}>
