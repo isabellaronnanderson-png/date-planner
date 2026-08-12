@@ -64,6 +64,14 @@ vercel dev
    search this app uses), so a personal project will very likely stay free —
    but Google still requires billing to be enabled to unlock the free tier.
 
+## The header
+
+The masthead is a 4×2 grid of your own photos (`public/photos/header-1.jpg`
+through `header-8.jpg`), with a "Dispatch" title card overlaid on top of the
+two middle columns. To swap in different photos, just replace those 8 files
+with the same names (square-ish crops work best, 500×500px is plenty) — no
+code changes needed.
+
 ## Deploying
 
 1. Push this repo to GitHub.
