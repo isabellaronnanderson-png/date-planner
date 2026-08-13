@@ -7,7 +7,7 @@ const emptyForm = {
   name: '',
   city: '',
   address: '',
-  category: 'breakfast',
+  categories: ['breakfast'],
   cost: '',
   notes: '',
   exhibitionEndDate: '',
@@ -60,16 +60,24 @@ export default function PlaceForm({ cities, defaultCity, onSave, onClose }) {
     setResults([]);
   }
 
+  function toggleCategory(value) {
+    setForm((f) => {
+      const has = f.categories.includes(value);
+      const categories = has ? f.categories.filter((c) => c !== value) : [...f.categories, value];
+      return { ...f, categories };
+    });
+  }
+
   function submit(e) {
     e.preventDefault();
-    if (!form.name.trim() || !form.city.trim()) return;
+    if (!form.name.trim() || !form.city.trim() || form.categories.length === 0) return;
     onSave({
       ...form,
       cost: form.cost === '' ? null : Number(form.cost)
     });
   }
 
-  const showExhibitionField = form.category.startsWith('activity');
+  const showExhibitionField = form.categories.some((c) => c.startsWith('activity'));
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -139,32 +147,34 @@ export default function PlaceForm({ cities, defaultCity, onSave, onClose }) {
             />
           </div>
 
-          <div className="field-row">
-            <div className="field">
-              <label htmlFor="category">Category</label>
-              <select
-                id="category"
-                value={form.category}
-                onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-              >
-                {CATEGORIES.map((c) => (
-                  <option key={c.value} value={c.value}>
-                    {c.label}
-                  </option>
-                ))}
-              </select>
+          <div className="field">
+            <label>Tags (pick as many as fit)</label>
+            <div className="cat-toggle-row">
+              {CATEGORIES.map((c) => (
+                <button
+                  key={c.value}
+                  type="button"
+                  className={`cat-toggle ${form.categories.includes(c.value) ? 'active' : ''}`}
+                  style={{ '--pill-color': `var(${c.cssVar})` }}
+                  onClick={() => toggleCategory(c.value)}
+                >
+                  {c.label}
+                </button>
+              ))}
             </div>
-            <div className="field">
-              <label htmlFor="cost">Approx. cost ({currencyForCity(form.city)})</label>
-              <input
-                id="cost"
-                type="number"
-                min="0"
-                placeholder="e.g. 25"
-                value={form.cost}
-                onChange={(e) => setForm((f) => ({ ...f, cost: e.target.value }))}
-              />
-            </div>
+            {form.categories.length === 0 && <div className="hint">Pick at least one tag.</div>}
+          </div>
+
+          <div className="field">
+            <label htmlFor="cost">Approx. cost ({currencyForCity(form.city)})</label>
+            <input
+              id="cost"
+              type="number"
+              min="0"
+              placeholder="e.g. 25"
+              value={form.cost}
+              onChange={(e) => setForm((f) => ({ ...f, cost: e.target.value }))}
+            />
           </div>
 
           {showExhibitionField && (
@@ -190,7 +200,7 @@ export default function PlaceForm({ cities, defaultCity, onSave, onClose }) {
           </div>
 
           <div className="ticket-actions">
-            <button type="submit" className="btn btn-primary">Save place</button>
+            <button type="submit" className="btn btn-primary" disabled={form.categories.length === 0}>Save place</button>
             <button type="button" className="btn btn-ghost" onClick={onClose}>Cancel</button>
           </div>
         </form>

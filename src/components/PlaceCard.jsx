@@ -6,16 +6,21 @@ import { currencyForCity } from '../lib/currency';
 export default function PlaceCard({ place, onToggleFavorite, onToggleVisited, onDelete }) {
   const closing = isClosingSoon(place);
   const daysLeft = daysUntil(place.exhibitionEndDate);
-  const meta = categoryMeta(place.category);
+  const categories = place.categories || [];
+  const primaryMeta = categoryMeta(categories[0]);
   const currency = currencyForCity(place.city);
 
   return (
-    <div className="place-card" style={{ '--accent': `var(${meta.cssVar})` }}>
+    <div className="place-card" style={{ '--accent': `var(${primaryMeta.cssVar})` }}>
       {closing && <div className="closing-pill">closing in {daysLeft}d</div>}
 
       <div className="place-card-top">
         <div>
-          <CategoryStamp category={place.category} />
+          <div className="cat-kicker-row">
+            {categories.map((cat) => (
+              <CategoryStamp key={cat} category={cat} />
+            ))}
+          </div>
           <div className="place-name">{place.name}</div>
           <div className="place-meta">
             <span>{place.city}</span>

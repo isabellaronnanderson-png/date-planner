@@ -8,7 +8,14 @@ function readAll() {
     const raw = localStorage.getItem(KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    // Migrate older single-category entries (place.category: 'dinner') to
+    // the newer multi-tag shape (place.categories: ['dinner']) on the fly,
+    // so existing saved data keeps working without a manual migration step.
+    return parsed.map((p) => ({
+      ...p,
+      categories: Array.isArray(p.categories) ? p.categories : p.category ? [p.category] : []
+    }));
   } catch (err) {
     console.error('Dispatch: failed to read saved places', err);
     return [];
@@ -32,7 +39,7 @@ export function addPlace(place) {
   const withId = {
     id: place.id || crypto.randomUUID(),
     name: place.name,
-    category: place.category,
+    categories: Array.isArray(place.categories) ? place.categories : place.category ? [place.category] : [],
     city: place.city,
     address: place.address || '',
     lat: place.lat ?? null,

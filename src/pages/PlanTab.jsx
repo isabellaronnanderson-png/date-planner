@@ -14,7 +14,7 @@ export default function PlanTab({ places, cities }) {
   const [timeOfDay, setTimeOfDay] = useState('day');
   const [mode, setMode] = useState('any');
   const [budget, setBudget] = useState('');
-  const [includeOptionalDrink, setIncludeOptionalDrink] = useState(true);
+  const [includeOptionalStop, setIncludeOptionalStop] = useState(true);
   const [result, setResult] = useState(null);
 
   function handleGenerate() {
@@ -24,7 +24,7 @@ export default function PlanTab({ places, cities }) {
       timeOfDay,
       budget: budget === '' ? null : Number(budget),
       mode,
-      includeOptionalDrink
+      includeOptionalStop
     });
     setResult(plan);
   }
@@ -85,16 +85,14 @@ export default function PlanTab({ places, cities }) {
           </div>
         </div>
 
-        {timeOfDay === 'day' && (
-          <label className="hint" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <input
-              type="checkbox"
-              checked={includeOptionalDrink}
-              onChange={(e) => setIncludeOptionalDrink(e.target.checked)}
-            />
-            Try to add a drink after, if it fits
-          </label>
-        )}
+        <label className="hint" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <input
+            type="checkbox"
+            checked={includeOptionalStop}
+            onChange={(e) => setIncludeOptionalStop(e.target.checked)}
+          />
+          {timeOfDay === 'day' ? 'Try to add a drink after, if it fits' : 'Try to add an activity, if it fits'}
+        </label>
 
         <div>
           <button className="btn btn-primary" onClick={handleGenerate} disabled={!city}>

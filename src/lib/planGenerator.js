@@ -2,12 +2,12 @@ import { averagePairwiseDistance } from './geo';
 
 const REQUIRED_CATEGORIES = {
   day: ['breakfast', 'activity-day'],
-  evening: ['drinks', 'dinner', 'activity-night']
+  evening: ['drinks', 'dinner']
 };
 
 const OPTIONAL_CATEGORY = {
   day: 'drinks',
-  evening: null
+  evening: 'activity-night'
 };
 
 // Rough default cost estimates used only when a place has no cost entered,
@@ -39,7 +39,8 @@ export function isClosingSoon(place) {
 
 function estimatedCost(place) {
   if (place.cost != null && place.cost !== '') return Number(place.cost);
-  return DEFAULT_COST_ESTIMATE[place.category] ?? 15;
+  const primaryCategory = (place.categories || [])[0];
+  return DEFAULT_COST_ESTIMATE[primaryCategory] ?? 15;
 }
 
 function scoreCombo(combo, mode) {
@@ -80,7 +81,7 @@ function trimBucket(bucket, mode) {
 }
 
 /**
- * Generate a suggested day plan.
+ * Generate a suggested day or evening plan.
  *
  * @param {Object} opts
  * @param {Array} opts.places - all saved places
@@ -88,9 +89,10 @@ function trimBucket(bucket, mode) {
  * @param {'day'|'evening'} opts.timeOfDay
  * @param {number|null} opts.budget - max total estimated spend, or null for no limit
  * @param {'any'|'favorites'|'new'} opts.mode
- * @param {boolean} opts.includeOptionalDrink - for day plans, try to add a drink after
+ * @param {boolean} opts.includeOptionalStop - try to add the bonus stop if it fits:
+ *   a drink after for day plans, an activity for evening plans
  */
-export function generatePlan({ places, city, timeOfDay, budget = null, mode = 'any', includeOptionalDrink = true }) {
+export function generatePlan({ places, city, timeOfDay, budget = null, mode = 'any', includeOptionalStop = true }) {
   if (!city) {
     return { ok: false, reason: 'no_city' };
   }
@@ -100,7 +102,7 @@ export function generatePlan({ places, city, timeOfDay, budget = null, mode = 'a
   );
 
   const required = REQUIRED_CATEGORIES[timeOfDay];
-  const buckets = required.map((cat) => cityPlaces.filter((p) => p.category === cat));
+  const buckets = required.map((cat) => cityPlaces.filter((p) => (p.categories || []).includes(cat)));
 
   const missing = required.filter((cat, i) => buckets[i].length === 0);
   if (missing.length > 0) {
@@ -109,6 +111,11 @@ export function generatePlan({ places, city, timeOfDay, budget = null, mode = 'a
 
   const trimmedBuckets = buckets.map((b) => trimBucket(b, mode));
   let combos = cartesian(trimmedBuckets);
+
+  // A place tagged with more than one category (e.g. both breakfast and
+  // dinner) could otherwise be picked to fill two slots in the same combo —
+  // drop any combo that reuses the same place.
+  combos = combos.filter((combo) => new Set(combo.map((p) => p.id)).size === combo.length);
 
   if (budget != null) {
     const filtered = combos.filter((combo) => combo.reduce((sum, p) => sum + estimatedCost(p), 0) <= budget);
@@ -127,12 +134,14 @@ export function generatePlan({ places, city, timeOfDay, budget = null, mode = 'a
 
   let best = scored[0].combo;
 
-  // Try to attach an optional drink stop for day plans.
+  // Try to attach the optional bonus stop — a drink after for day plans,
+  // an activity for evening plans.
   const optionalCat = OPTIONAL_CATEGORY[timeOfDay];
   let optionalStop = null;
-  if (optionalCat && includeOptionalDrink) {
+  if (optionalCat && includeOptionalStop) {
+    const usedIds = new Set(best.map((p) => p.id));
     const optionalCandidates = trimBucket(
-      cityPlaces.filter((p) => p.category === optionalCat),
+      cityPlaces.filter((p) => (p.categories || []).includes(optionalCat) && !usedIds.has(p.id)),
       mode
     );
     if (optionalCandidates.length > 0) {
@@ -158,7 +167,7 @@ export function generatePlan({ places, city, timeOfDay, budget = null, mode = 'a
     ok: true,
     timeOfDay,
     city,
-    stops: labelStops(best, optionalStop, timeOfDay),
+    stops: labelStops(best, required, optionalStop, timeOfDay),
     totalCost,
     avgDistanceKm: avgDistance,
     closingSoonStops,
@@ -166,17 +175,16 @@ export function generatePlan({ places, city, timeOfDay, budget = null, mode = 'a
   };
 }
 
-function labelStops(requiredCombo, optionalStop, timeOfDay) {
-  const order = timeOfDay === 'day' ? ['breakfast', 'activity-day'] : ['drinks', 'dinner', 'activity-night'];
-  const byCategory = {};
-  for (const p of requiredCombo) byCategory[p.category] = p;
-
-  const stops = order
-    .filter((cat) => byCategory[cat])
-    .map((cat) => ({ slot: slotLabel(cat), place: byCategory[cat] }));
+function labelStops(requiredCombo, requiredCategories, optionalStop, timeOfDay) {
+  // requiredCombo[i] was drawn from the bucket for requiredCategories[i] —
+  // zip by position rather than reading place.categories, since a place can
+  // now carry more than one tag and we want the slot it was actually picked
+  // for, not just any matching category.
+  const stops = requiredCombo.map((place, i) => ({ slot: slotLabel(requiredCategories[i]), place }));
 
   if (optionalStop) {
-    stops.push({ slot: 'drink after', place: optionalStop });
+    const optionalLabel = timeOfDay === 'day' ? 'drink after' : 'evening activity';
+    stops.push({ slot: optionalLabel, place: optionalStop });
   }
   return stops;
 }

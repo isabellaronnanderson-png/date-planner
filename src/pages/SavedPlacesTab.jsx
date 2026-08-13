@@ -12,7 +12,7 @@ export default function SavedPlacesTab({ places, cities, onAdd, onToggleFavorite
   const filtered = useMemo(() => {
     return places.filter((p) => {
       if (cityFilter !== 'all' && p.city !== cityFilter) return false;
-      if (categoryFilter !== 'all' && p.category !== categoryFilter) return false;
+      if (categoryFilter !== 'all' && !(p.categories || []).includes(categoryFilter)) return false;
       if (favoritesOnly && !p.favorite) return false;
       return true;
     });
