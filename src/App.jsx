@@ -11,7 +11,9 @@ const HEADER_PHOTOS = [
   '/photos/header-5.jpg',
   '/photos/header-6.jpg',
   '/photos/header-7.jpg',
-  '/photos/header-8.jpg'
+  '/photos/header-8.jpg',
+  '/photos/header-9.jpg',
+  '/photos/header-10.jpg'
 ];
 
 export default function App() {

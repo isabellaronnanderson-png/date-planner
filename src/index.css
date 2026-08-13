@@ -5,7 +5,7 @@
    ============================================================ */
 
 :root {
-  --bg: #ffffff;
+  --bg: #d3ecf8;
   --surface: #ffffff;
   --surface-sunk: #f3f6f2;
   --ink: #3f5b43;
@@ -22,10 +22,14 @@
   --terracotta: #b5502f;
   --plum: #8a4a6b;
 
-  --font-display: 'Cinzel', serif;      /* masthead, section heads, buttons, tabs — tracked caps */
+  --font-display: 'Cinzel', serif;      /* section heads, buttons, tabs — tracked caps */
+  --font-script: 'Parisienne', cursive; /* wordmark only */
   --font-serif: 'Lora', Georgia, serif;  /* place names, stop names, editorial teaser copy */
   --font-body: 'Work Sans', -apple-system, sans-serif;
   --font-mono: 'Space Mono', ui-monospace, monospace;
+
+  --butter: #f9e8a8;
+  --butter-deep: #eeda85;
 
   --radius: 4px;
   --radius-sm: 3px;
@@ -70,10 +74,10 @@ a { color: var(--sage-deep); }
 
 .photo-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(2, 1fr);
   gap: 4px;
-  aspect-ratio: 4 / 2;
+  aspect-ratio: 5 / 2;
   overflow: hidden;
   border-radius: var(--radius-sm);
 }
@@ -83,34 +87,31 @@ a { color: var(--sage-deep); }
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   grid-template-rows: 1fr;
   gap: 4px;
   pointer-events: none;
 }
 
 .title-card {
-  grid-column: 2 / 4;
+  grid-column: 2 / 5;
   align-self: center;
   justify-self: center;
-  width: 88%;
-  height: 15%;
-  background: var(--surface);
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 0 4px var(--surface), 0 10px 26px rgba(63, 91, 67, 0.22);
-  border-radius: 2px;
 }
 
 .title-card-text {
-  font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  color: var(--ink);
-  text-transform: uppercase;
+  font-family: var(--font-script);
+  font-weight: 400;
+  color: var(--butter);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.25);
   text-align: center;
-  font-size: clamp(1rem, 2.8vw, 1.4rem);
+  font-size: clamp(2.8rem, 10vw, 5.6rem);
+  line-height: 1;
   margin: 0;
 }
 
@@ -135,7 +136,7 @@ a { color: var(--sage-deep); }
   color: var(--ink);
   transition: background 0.15s ease, color 0.15s ease;
 }
-.tab-stub.active { background: var(--ink); color: #fff; }
+.tab-stub.active { background: var(--butter); color: var(--ink); border-color: var(--ink); }
 
 /* ------------------------------------------------------------
    Section headers
@@ -185,10 +186,10 @@ a { color: var(--sage-deep); }
   border-radius: var(--radius-pill);
   transition: background 0.15s ease, color 0.15s ease;
 }
-.btn:hover { background: var(--ink); color: #fff; }
+.btn:hover { background: var(--butter); color: var(--ink); border-color: var(--ink); }
 
-.btn-primary { background: var(--ink); border-color: var(--ink); color: #fff; }
-.btn-primary:hover { background: var(--sage-deep); border-color: var(--sage-deep); }
+.btn-primary { background: var(--butter); border-color: var(--ink); color: var(--ink); }
+.btn-primary:hover { background: var(--butter-deep); border-color: var(--ink); }
 
 .btn-ghost { border-color: var(--line-strong); color: var(--ink-soft); }
 .btn-ghost:hover { background: var(--surface-sunk); color: var(--ink); border-color: var(--line-strong); }
@@ -359,7 +360,7 @@ a { color: var(--sage-deep); }
   padding: 9px 16px;
   transition: background 0.15s ease, color 0.15s ease;
 }
-.toggle-pair button.active { background: var(--ink); color: #fff; }
+.toggle-pair button.active { background: var(--butter); color: var(--ink); }
 
 /* ------------------------------------------------------------
    Generated itinerary
