@@ -72,6 +72,21 @@ two middle columns. To swap in different photos, just replace those 8 files
 with the same names (square-ish crops work best, 500×500px is plenty) — no
 code changes needed.
 
+## Notes on place search accuracy
+
+Google's Text Search API infers location from the requesting server's IP
+address when no explicit bias is given — since `api/places.js` runs on
+Vercel's US infrastructure, searches would otherwise skew American
+regardless of what city you type. The function now includes a small
+city → coordinates lookup and passes an explicit `locationBias` circle
+(40km radius) around the typed city to Google, so results stay local.
+
+This lookup covers common cities but isn't exhaustive — if you search in a
+city that isn't in `CITY_COORDS` (in `api/places.js`), it'll fall back to
+the old text-based "in {city}" phrasing only, which can occasionally drift.
+Add more cities to that list as you need them; each entry is just
+`cityname: [latitude, longitude]`.
+
 ## Deploying
 
 1. Push this repo to GitHub.
