@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { generatePlan } from '../lib/planGenerator';
 import { categoryMeta } from '../lib/categories';
+import { currencyForCity } from '../lib/currency';
 
 const REASON_COPY = {
   no_city: 'Pick a city to plan in.',
@@ -72,7 +73,7 @@ export default function PlanTab({ places, cities }) {
           </div>
 
           <div className="field">
-            <label htmlFor="budget">Budget (optional, total)</label>
+            <label htmlFor="budget">Budget (optional, total, {currencyForCity(city)})</label>
             <input
               id="budget"
               type="number"
@@ -116,6 +117,7 @@ export default function PlanTab({ places, cities }) {
 }
 
 function ItineraryCard({ plan }) {
+  const currency = currencyForCity(plan.city);
   return (
     <div className="itinerary">
       <div className="itinerary-head">
@@ -130,7 +132,7 @@ function ItineraryCard({ plan }) {
               <div className="stop-name">{stop.place.name}</div>
               <div className="stop-meta">
                 {stop.place.address || stop.place.city}
-                {stop.place.cost != null && ` · ~$${stop.place.cost}`}
+                {stop.place.cost != null && ` · ~${currency}${stop.place.cost}`}
                 {plan.closingSoonStops.includes(stop.place.id) && ' · closing soon'}
               </div>
             </div>
@@ -138,7 +140,7 @@ function ItineraryCard({ plan }) {
         ))}
       </div>
       <div className="itinerary-foot">
-        <span>est. total ~${plan.totalCost}</span>
+        <span>est. total ~{currency}{plan.totalCost}</span>
         <span>
           {plan.hasCoordinates && plan.avgDistanceKm != null
             ? `~${plan.avgDistanceKm.toFixed(1)} km apart, on average`

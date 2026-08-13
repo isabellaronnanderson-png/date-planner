@@ -1,11 +1,13 @@
 import CategoryStamp from './CategoryStamp';
 import { isClosingSoon, daysUntil } from '../lib/planGenerator';
 import { categoryMeta } from '../lib/categories';
+import { currencyForCity } from '../lib/currency';
 
 export default function PlaceCard({ place, onToggleFavorite, onToggleVisited, onDelete }) {
   const closing = isClosingSoon(place);
   const daysLeft = daysUntil(place.exhibitionEndDate);
   const meta = categoryMeta(place.category);
+  const currency = currencyForCity(place.city);
 
   return (
     <div className="place-card" style={{ '--accent': `var(${meta.cssVar})` }}>
@@ -17,7 +19,7 @@ export default function PlaceCard({ place, onToggleFavorite, onToggleVisited, on
           <div className="place-name">{place.name}</div>
           <div className="place-meta">
             <span>{place.city}</span>
-            {place.cost != null && place.cost !== '' && <span>· ~${place.cost}</span>}
+            {place.cost != null && place.cost !== '' && <span>· ~{currency}{place.cost}</span>}
           </div>
         </div>
         <button

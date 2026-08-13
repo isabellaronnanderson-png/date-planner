@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { CATEGORIES } from '../lib/categories';
 import { searchPlaces } from '../lib/placesApi';
+import { currencyForCity } from '../lib/currency';
 
 const emptyForm = {
   name: '',
@@ -154,7 +155,7 @@ export default function PlaceForm({ cities, defaultCity, onSave, onClose }) {
               </select>
             </div>
             <div className="field">
-              <label htmlFor="cost">Approx. cost</label>
+              <label htmlFor="cost">Approx. cost ({currencyForCity(form.city)})</label>
               <input
                 id="cost"
                 type="number"

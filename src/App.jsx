@@ -59,7 +59,10 @@ export default function App() {
           </div>
           <div className="title-overlay">
             <div className="title-card">
-              <h1 className="title-card-text">Dispatch</h1>
+              <h1 className="title-card-text">
+                <span>a perfect</span>
+                <span>day out</span>
+              </h1>
             </div>
           </div>
         </div>
