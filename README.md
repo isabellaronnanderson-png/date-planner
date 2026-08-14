@@ -72,6 +72,24 @@ two middle columns. To swap in different photos, just replace those 8 files
 with the same names (square-ish crops work best, 500×500px is plenty) — no
 code changes needed.
 
+## Opening hours, editing, and photos
+
+- **Opening hours** — when you add a place via the Google Places search, its
+  hours come along automatically and the plan generator uses them: a place
+  is excluded from a suggested plan only when its hours clearly show it's
+  closed at that slot's typical time (breakfast ~9am, day activity ~2pm,
+  drinks ~6pm, dinner ~8pm, night activity ~10pm), based on today's day of
+  week. Places without hours data (added manually) are never penalized —
+  missing data is treated as "unknown," not "closed." Cards also show a
+  quick "open now / closed now" hint when hours are available.
+- **Editing** — every card has an "edit" button that reopens the same form
+  pre-filled, so you can retag a place, fix a typo, or add photos without
+  starting over.
+- **Photos** — each place can have its own small gallery, added from the
+  form. Photos are stored in the browser's IndexedDB (not localStorage,
+  which is too small for real images) and resized/compressed client-side
+  before saving. Click a thumbnail on a card to view it full-size.
+
 ## Notes on place search accuracy
 
 Google's Text Search API infers location from the requesting server's IP

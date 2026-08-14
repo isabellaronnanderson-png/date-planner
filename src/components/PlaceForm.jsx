@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { CATEGORIES } from '../lib/categories';
 import { searchPlaces } from '../lib/placesApi';
 import { currencyForCity } from '../lib/currency';
+import { addPhoto, deletePhoto, getPhotos } from '../lib/photoStore';
 
 const emptyForm = {
   name: '',
@@ -13,16 +14,40 @@ const emptyForm = {
   exhibitionEndDate: '',
   lat: null,
   lng: null,
-  googlePlaceId: null
+  googlePlaceId: null,
+  openingHours: null
 };
 
-export default function PlaceForm({ cities, defaultCity, onSave, onClose }) {
-  const [form, setForm] = useState({ ...emptyForm, city: defaultCity || '' });
+export default function PlaceForm({ cities, defaultCity, place, onSave, onClose }) {
+  const isEditing = Boolean(place);
+  const [form, setForm] = useState(() =>
+    isEditing ? { ...emptyForm, ...place } : { ...emptyForm, city: defaultCity || '' }
+  );
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [searchNote, setSearchNote] = useState('');
+  const [saving, setSaving] = useState(false);
   const debounceRef = useRef(null);
+
+  // Photos: existing (already persisted, for edit mode) + pending (picked
+  // but not uploaded until the place itself is saved).
+  const [existingPhotos, setExistingPhotos] = useState([]);
+  const [pendingPhotos, setPendingPhotos] = useState([]); // { file, previewUrl }
+
+  useEffect(() => {
+    if (isEditing) {
+      getPhotos(place.id).then(setExistingPhotos).catch(() => {});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      pendingPhotos.forEach((p) => URL.revokeObjectURL(p.previewUrl));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -54,7 +79,8 @@ export default function PlaceForm({ cities, defaultCity, onSave, onClose }) {
       address: r.address,
       lat: r.lat,
       lng: r.lng,
-      googlePlaceId: r.googlePlaceId
+      googlePlaceId: r.googlePlaceId,
+      openingHours: r.openingHours || null
     }));
     setQuery('');
     setResults([]);
@@ -68,13 +94,47 @@ export default function PlaceForm({ cities, defaultCity, onSave, onClose }) {
     });
   }
 
-  function submit(e) {
+  function handleFilesSelected(e) {
+    const files = Array.from(e.target.files || []);
+    const withPreviews = files.map((file) => ({ file, previewUrl: URL.createObjectURL(file) }));
+    setPendingPhotos((p) => [...p, ...withPreviews]);
+    e.target.value = ''; // allow re-selecting the same file later
+  }
+
+  function removePendingPhoto(index) {
+    setPendingPhotos((p) => {
+      URL.revokeObjectURL(p[index].previewUrl);
+      return p.filter((_, i) => i !== index);
+    });
+  }
+
+  async function removeExistingPhoto(photoId) {
+    await deletePhoto(photoId);
+    setExistingPhotos((p) => p.filter((ph) => ph.id !== photoId));
+  }
+
+  async function submit(e) {
     e.preventDefault();
     if (!form.name.trim() || !form.city.trim() || form.categories.length === 0) return;
-    onSave({
-      ...form,
-      cost: form.cost === '' ? null : Number(form.cost)
-    });
+
+    setSaving(true);
+    try {
+      const payload = {
+        ...form,
+        cost: form.cost === '' ? null : Number(form.cost)
+      };
+      if (isEditing) payload.id = place.id;
+
+      const saved = onSave(payload);
+      const placeId = saved?.id || place?.id;
+
+      if (placeId && pendingPhotos.length > 0) {
+        await Promise.all(pendingPhotos.map((p) => addPhoto(placeId, p.file)));
+      }
+      onClose();
+    } finally {
+      setSaving(false);
+    }
   }
 
   const showExhibitionField = form.categories.some((c) => c.startsWith('activity'));
@@ -83,33 +143,35 @@ export default function PlaceForm({ cities, defaultCity, onSave, onClose }) {
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
-          <h3>Add a place</h3>
+          <h3>{isEditing ? 'Edit place' : 'Add a place'}</h3>
           <button className="close-x" onClick={onClose} aria-label="Close">×</button>
         </div>
 
         <form className="stack" onSubmit={submit}>
-          <div className="field autocomplete-wrap">
-            <label htmlFor="search">Search (optional)</label>
-            <input
-              id="search"
-              placeholder="Start typing a place name…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              autoComplete="off"
-            />
-            {searching && <div className="hint">Searching…</div>}
-            {searchNote && <div className="hint">{searchNote}</div>}
-            {results.length > 0 && (
-              <div className="autocomplete-list">
-                {results.map((r) => (
-                  <div key={r.googlePlaceId} className="autocomplete-item" onClick={() => selectResult(r)}>
-                    <strong>{r.name}</strong>
-                    <div className="hint">{r.address}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          {!isEditing && (
+            <div className="field autocomplete-wrap">
+              <label htmlFor="search">Search (optional)</label>
+              <input
+                id="search"
+                placeholder="Start typing a place name…"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                autoComplete="off"
+              />
+              {searching && <div className="hint">Searching…</div>}
+              {searchNote && <div className="hint">{searchNote}</div>}
+              {results.length > 0 && (
+                <div className="autocomplete-list">
+                  {results.map((r) => (
+                    <div key={r.googlePlaceId} className="autocomplete-item" onClick={() => selectResult(r)}>
+                      <strong>{r.name}</strong>
+                      <div className="hint">{r.address}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="field-row">
             <div className="field">
@@ -199,8 +261,31 @@ export default function PlaceForm({ cities, defaultCity, onSave, onClose }) {
             />
           </div>
 
+          <div className="field">
+            <label htmlFor="photos">Photos</label>
+            <input id="photos" type="file" accept="image/*" multiple onChange={handleFilesSelected} />
+            {(existingPhotos.length > 0 || pendingPhotos.length > 0) && (
+              <div className="photo-edit-strip">
+                {existingPhotos.map((p) => (
+                  <div className="photo-edit-thumb" key={p.id}>
+                    <img src={p.dataUrl} alt="" />
+                    <button type="button" onClick={() => removeExistingPhoto(p.id)} aria-label="Remove photo">×</button>
+                  </div>
+                ))}
+                {pendingPhotos.map((p, i) => (
+                  <div className="photo-edit-thumb pending" key={p.previewUrl}>
+                    <img src={p.previewUrl} alt="" />
+                    <button type="button" onClick={() => removePendingPhoto(i)} aria-label="Remove photo">×</button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           <div className="ticket-actions">
-            <button type="submit" className="btn btn-primary" disabled={form.categories.length === 0}>Save place</button>
+            <button type="submit" className="btn btn-primary" disabled={form.categories.length === 0 || saving}>
+              {saving ? 'Saving…' : isEditing ? 'Save changes' : 'Save place'}
+            </button>
             <button type="button" className="btn btn-ghost" onClick={onClose}>Cancel</button>
           </div>
         </form>

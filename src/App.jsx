@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import SavedPlacesTab from './pages/SavedPlacesTab';
 import PlanTab from './pages/PlanTab';
 import { getPlaces, addPlace, updatePlace, deletePlace, getCities } from './lib/storage';
+import { deleteAllPhotosForPlace } from './lib/photoStore';
 
 const HEADER_PHOTOS = [
   '/photos/header-1.jpg',
@@ -25,8 +26,15 @@ export default function App() {
   }, []);
 
   function handleAdd(place) {
-    addPlace(place);
+    const saved = addPlace(place);
     setPlaces(getPlaces());
+    return saved;
+  }
+
+  function handleUpdate(id, patch) {
+    const saved = updatePlace(id, patch);
+    setPlaces(getPlaces());
+    return saved;
   }
 
   function handleToggleFavorite(id) {
@@ -43,6 +51,7 @@ export default function App() {
 
   function handleDelete(id) {
     deletePlace(id);
+    deleteAllPhotosForPlace(id).catch(() => {});
     setPlaces(getPlaces());
   }
 
@@ -83,6 +92,7 @@ export default function App() {
             places={places}
             cities={cities}
             onAdd={handleAdd}
+            onUpdate={handleUpdate}
             onToggleFavorite={handleToggleFavorite}
             onToggleVisited={handleToggleVisited}
             onDelete={handleDelete}

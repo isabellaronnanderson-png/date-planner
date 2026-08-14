@@ -1,14 +1,17 @@
 import CategoryStamp from './CategoryStamp';
+import PhotoGallery from './PhotoGallery';
 import { isClosingSoon, daysUntil } from '../lib/planGenerator';
 import { categoryMeta } from '../lib/categories';
 import { currencyForCity } from '../lib/currency';
+import { isOpenNow, hasHoursData } from '../lib/hours';
 
-export default function PlaceCard({ place, onToggleFavorite, onToggleVisited, onDelete }) {
+export default function PlaceCard({ place, onToggleFavorite, onToggleVisited, onDelete, onEdit }) {
   const closing = isClosingSoon(place);
   const daysLeft = daysUntil(place.exhibitionEndDate);
   const categories = place.categories || [];
   const primaryMeta = categoryMeta(categories[0]);
   const currency = currencyForCity(place.city);
+  const openNow = hasHoursData(place) ? isOpenNow(place) : null;
 
   return (
     <div className="place-card" style={{ '--accent': `var(${primaryMeta.cssVar})` }}>
@@ -25,6 +28,7 @@ export default function PlaceCard({ place, onToggleFavorite, onToggleVisited, on
           <div className="place-meta">
             <span>{place.city}</span>
             {place.cost != null && place.cost !== '' && <span>· ~{currency}{place.cost}</span>}
+            {openNow != null && <span>· {openNow ? 'open now' : 'closed now'}</span>}
           </div>
         </div>
         <button
@@ -45,12 +49,17 @@ export default function PlaceCard({ place, onToggleFavorite, onToggleVisited, on
 
       {place.notes && <div className="place-notes">{place.notes}</div>}
 
+      <PhotoGallery placeId={place.id} />
+
       <div className="place-actions">
         <button
           className={`btn btn-sm ${place.visited ? '' : 'btn-ghost'}`}
           onClick={() => onToggleVisited(place.id)}
         >
           {place.visited ? '✓ been there' : 'mark visited'}
+        </button>
+        <button className="btn btn-sm btn-ghost" onClick={onEdit}>
+          edit
         </button>
         <button className="btn btn-sm btn-ghost" onClick={() => onDelete(place.id)}>
           remove

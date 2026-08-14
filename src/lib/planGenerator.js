@@ -1,4 +1,5 @@
 import { averagePairwiseDistance } from './geo';
+import { isOpenAt } from './hours';
 
 const REQUIRED_CATEGORIES = {
   day: ['breakfast', 'activity-day'],
@@ -102,7 +103,9 @@ export function generatePlan({ places, city, timeOfDay, budget = null, mode = 'a
   );
 
   const required = REQUIRED_CATEGORIES[timeOfDay];
-  const buckets = required.map((cat) => cityPlaces.filter((p) => (p.categories || []).includes(cat)));
+  const buckets = required.map((cat) =>
+    cityPlaces.filter((p) => (p.categories || []).includes(cat) && isOpenAt(p, cat) !== false)
+  );
 
   const missing = required.filter((cat, i) => buckets[i].length === 0);
   if (missing.length > 0) {
@@ -141,7 +144,9 @@ export function generatePlan({ places, city, timeOfDay, budget = null, mode = 'a
   if (optionalCat && includeOptionalStop) {
     const usedIds = new Set(best.map((p) => p.id));
     const optionalCandidates = trimBucket(
-      cityPlaces.filter((p) => (p.categories || []).includes(optionalCat) && !usedIds.has(p.id)),
+      cityPlaces.filter(
+        (p) => (p.categories || []).includes(optionalCat) && !usedIds.has(p.id) && isOpenAt(p, optionalCat) !== false
+      ),
       mode
     );
     if (optionalCandidates.length > 0) {

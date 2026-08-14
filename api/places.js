@@ -84,7 +84,8 @@ export default async function handler(req, res) {
           'places.formattedAddress',
           'places.location',
           'places.priceLevel',
-          'places.primaryType'
+          'places.primaryType',
+          'places.regularOpeningHours'
         ].join(',')
       },
       body: JSON.stringify(requestBody)
@@ -104,7 +105,13 @@ export default async function handler(req, res) {
       lat: place.location?.latitude ?? null,
       lng: place.location?.longitude ?? null,
       priceLevel: place.priceLevel || null,
-      primaryType: place.primaryType || null
+      primaryType: place.primaryType || null,
+      openingHours: place.regularOpeningHours
+        ? {
+            periods: place.regularOpeningHours.periods || [],
+            weekdayDescriptions: place.regularOpeningHours.weekdayDescriptions || []
+          }
+        : null
     }));
 
     res.status(200).json({ results });

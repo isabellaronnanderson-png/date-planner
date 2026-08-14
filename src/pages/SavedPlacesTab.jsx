@@ -3,8 +3,9 @@ import PlaceCard from '../components/PlaceCard';
 import PlaceForm from '../components/PlaceForm';
 import { CATEGORIES } from '../lib/categories';
 
-export default function SavedPlacesTab({ places, cities, onAdd, onToggleFavorite, onToggleVisited, onDelete }) {
+export default function SavedPlacesTab({ places, cities, onAdd, onUpdate, onToggleFavorite, onToggleVisited, onDelete }) {
   const [showForm, setShowForm] = useState(false);
+  const [editingPlace, setEditingPlace] = useState(null);
   const [cityFilter, setCityFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [favoritesOnly, setFavoritesOnly] = useState(false);
@@ -17,6 +18,13 @@ export default function SavedPlacesTab({ places, cities, onAdd, onToggleFavorite
       return true;
     });
   }, [places, cityFilter, categoryFilter, favoritesOnly]);
+
+  const formOpen = showForm || editingPlace != null;
+
+  function closeForm() {
+    setShowForm(false);
+    setEditingPlace(null);
+  }
 
   return (
     <div>
@@ -69,20 +77,19 @@ export default function SavedPlacesTab({ places, cities, onAdd, onToggleFavorite
               onToggleFavorite={onToggleFavorite}
               onToggleVisited={onToggleVisited}
               onDelete={onDelete}
+              onEdit={() => setEditingPlace(p)}
             />
           ))}
         </div>
       )}
 
-      {showForm && (
+      {formOpen && (
         <PlaceForm
           cities={cities}
           defaultCity={cityFilter !== 'all' ? cityFilter : ''}
-          onClose={() => setShowForm(false)}
-          onSave={(place) => {
-            onAdd(place);
-            setShowForm(false);
-          }}
+          place={editingPlace}
+          onClose={closeForm}
+          onSave={(payload) => (payload.id ? onUpdate(payload.id, payload) : onAdd(payload))}
         />
       )}
     </div>

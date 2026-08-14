@@ -47,6 +47,7 @@ export function addPlace(place) {
     cost: place.cost ?? null,
     notes: place.notes || '',
     exhibitionEndDate: place.exhibitionEndDate || null,
+    openingHours: place.openingHours || null,
     favorite: place.favorite || false,
     visited: place.visited || false,
     googlePlaceId: place.googlePlaceId || null,
