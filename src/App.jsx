@@ -77,11 +77,11 @@ export default function App() {
         </div>
 
         <nav className="tab-row">
-          <button className={`tab-stub ${tab === 'saved' ? 'active' : ''}`} onClick={() => setTab('saved')}>
-            Saved places
-          </button>
           <button className={`tab-stub ${tab === 'plan' ? 'active' : ''}`} onClick={() => setTab('plan')}>
             Plan a day
+          </button>
+          <button className={`tab-stub ${tab === 'saved' ? 'active' : ''}`} onClick={() => setTab('saved')}>
+            Saved places
           </button>
         </nav>
       </header>

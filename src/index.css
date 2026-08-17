@@ -5,7 +5,7 @@
    ============================================================ */
 
 :root {
-  --bg: #d3ecf8;
+  --bg: #ffffff;
   --surface: #ffffff;
   --surface-sunk: #f3f6f2;
   --ink: #3f5b43;
@@ -38,13 +38,13 @@
 
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; }
-
 body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden; /* safety net for the full-bleed header's 100vw breakout */
 }
 
 h1, h2, h3, h4 { margin: 0; }
@@ -57,7 +57,7 @@ a { color: var(--sage-deep); }
    Layout shell
    ------------------------------------------------------------ */
 
-.app-shell { max-width: 900px; margin: 0 auto; padding: 0 24px 90px; }
+.app-shell { max-width: 1320px; margin: 0 auto; padding: 0 clamp(18px, 4vw, 64px) 90px; }
 @media (max-width: 640px) { .app-shell { padding: 0 16px 60px; } }
 
 /* ------------------------------------------------------------
@@ -65,11 +65,14 @@ a { color: var(--sage-deep); }
    ------------------------------------------------------------ */
 
 .masthead {
-  padding: 22px 0 26px;
+  padding: 0 0 26px;
 }
 
 .photo-header {
   position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
 }
 
 .photo-grid {
@@ -77,9 +80,9 @@ a { color: var(--sage-deep); }
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(2, 1fr);
   gap: 4px;
-  aspect-ratio: 5 / 2;
+  width: 100%;
+  height: clamp(280px, 34vw, 680px);
   overflow: hidden;
-  border-radius: var(--radius-sm);
 }
 .photo-grid img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
