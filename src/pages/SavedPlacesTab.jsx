@@ -2,22 +2,27 @@ import { useMemo, useState } from 'react';
 import PlaceCard from '../components/PlaceCard';
 import PlaceForm from '../components/PlaceForm';
 import { CATEGORIES } from '../lib/categories';
+import { getAllTags } from '../lib/storage';
 
 export default function SavedPlacesTab({ places, cities, onAdd, onUpdate, onToggleFavorite, onToggleVisited, onDelete }) {
   const [showForm, setShowForm] = useState(false);
   const [editingPlace, setEditingPlace] = useState(null);
   const [cityFilter, setCityFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [tagFilter, setTagFilter] = useState('all');
   const [favoritesOnly, setFavoritesOnly] = useState(false);
+
+  const allTags = useMemo(() => getAllTags(), [places]);
 
   const filtered = useMemo(() => {
     return places.filter((p) => {
       if (cityFilter !== 'all' && p.city !== cityFilter) return false;
       if (categoryFilter !== 'all' && !(p.categories || []).includes(categoryFilter)) return false;
+      if (tagFilter !== 'all' && !(p.tags || []).includes(tagFilter)) return false;
       if (favoritesOnly && !p.favorite) return false;
       return true;
     });
-  }, [places, cityFilter, categoryFilter, favoritesOnly]);
+  }, [places, cityFilter, categoryFilter, tagFilter, favoritesOnly]);
 
   const formOpen = showForm || editingPlace != null;
 
@@ -55,6 +60,15 @@ export default function SavedPlacesTab({ places, cities, onAdd, onUpdate, onTogg
             ))}
           </select>
         </div>
+        <div className="field">
+          <label htmlFor="tagFilter">Tag</label>
+          <select id="tagFilter" value={tagFilter} onChange={(e) => setTagFilter(e.target.value)}>
+            <option value="all">All tags</option>
+            {allTags.map((t) => (
+              <option key={t} value={t}>#{t}</option>
+            ))}
+          </select>
+        </div>
         <button
           className={`btn btn-sm ${favoritesOnly ? '' : 'btn-ghost'}`}
           onClick={() => setFavoritesOnly((v) => !v)}
@@ -78,6 +92,7 @@ export default function SavedPlacesTab({ places, cities, onAdd, onUpdate, onTogg
               onToggleVisited={onToggleVisited}
               onDelete={onDelete}
               onEdit={() => setEditingPlace(p)}
+              onTagClick={(t) => setTagFilter(t)}
             />
           ))}
         </div>

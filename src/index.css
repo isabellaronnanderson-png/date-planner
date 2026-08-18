@@ -264,6 +264,49 @@ a { color: var(--sage-deep); }
   margin-bottom: 8px;
 }
 
+/* ------------------------------------------------------------
+   Custom tags — user-named, muted (distinct from category pills)
+   ------------------------------------------------------------ */
+
+.tag-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+  background: var(--surface-sunk);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+}
+
+.tag-chip button {
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.tag-chip-clickable {
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.tag-chip-clickable:hover {
+  background: var(--butter);
+  color: var(--ink);
+  border-color: var(--butter-deep);
+}
+
 .cat-kicker {
   display: inline-block;
   font-family: var(--font-mono);

@@ -5,10 +5,11 @@ import { categoryMeta } from '../lib/categories';
 import { currencyForCity } from '../lib/currency';
 import { isOpenNow, hasHoursData } from '../lib/hours';
 
-export default function PlaceCard({ place, onToggleFavorite, onToggleVisited, onDelete, onEdit }) {
+export default function PlaceCard({ place, onToggleFavorite, onToggleVisited, onDelete, onEdit, onTagClick }) {
   const closing = isClosingSoon(place);
   const daysLeft = daysUntil(place.exhibitionEndDate);
   const categories = place.categories || [];
+  const tags = place.tags || [];
   const primaryMeta = categoryMeta(categories[0]);
   const currency = currencyForCity(place.city);
   const openNow = hasHoursData(place) ? isOpenNow(place) : null;
@@ -48,6 +49,21 @@ export default function PlaceCard({ place, onToggleFavorite, onToggleVisited, on
       )}
 
       {place.notes && <div className="place-notes">{place.notes}</div>}
+
+      {tags.length > 0 && (
+        <div className="tag-chip-row" style={{ marginTop: 10 }}>
+          {tags.map((t) => (
+            <button
+              key={t}
+              type="button"
+              className="tag-chip tag-chip-clickable"
+              onClick={() => onTagClick?.(t)}
+            >
+              #{t}
+            </button>
+          ))}
+        </div>
+      )}
 
       <PhotoGallery placeId={place.id} />
 

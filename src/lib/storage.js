@@ -14,7 +14,8 @@ function readAll() {
     // so existing saved data keeps working without a manual migration step.
     return parsed.map((p) => ({
       ...p,
-      categories: Array.isArray(p.categories) ? p.categories : p.category ? [p.category] : []
+      categories: Array.isArray(p.categories) ? p.categories : p.category ? [p.category] : [],
+      tags: Array.isArray(p.tags) ? p.tags : []
     }));
   } catch (err) {
     console.error('Dispatch: failed to read saved places', err);
@@ -40,6 +41,7 @@ export function addPlace(place) {
     id: place.id || crypto.randomUUID(),
     name: place.name,
     categories: Array.isArray(place.categories) ? place.categories : place.category ? [place.category] : [],
+    tags: Array.isArray(place.tags) ? place.tags : [],
     city: place.city,
     address: place.address || '',
     lat: place.lat ?? null,
@@ -70,4 +72,10 @@ export function deletePlace(id) {
 export function getCities() {
   const cities = new Set(readAll().map((p) => p.city).filter(Boolean));
   return Array.from(cities).sort();
+}
+
+export function getAllTags() {
+  const tags = new Set();
+  readAll().forEach((p) => (p.tags || []).forEach((t) => tags.add(t)));
+  return Array.from(tags).sort((a, b) => a.localeCompare(b));
 }

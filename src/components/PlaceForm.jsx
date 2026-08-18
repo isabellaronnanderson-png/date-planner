@@ -3,12 +3,14 @@ import { CATEGORIES } from '../lib/categories';
 import { searchPlaces } from '../lib/placesApi';
 import { currencyForCity } from '../lib/currency';
 import { addPhoto, deletePhoto, getPhotos } from '../lib/photoStore';
+import { getAllTags } from '../lib/storage';
 
 const emptyForm = {
   name: '',
   city: '',
   address: '',
   categories: ['breakfast'],
+  tags: [],
   cost: '',
   notes: '',
   exhibitionEndDate: '',
@@ -28,6 +30,8 @@ export default function PlaceForm({ cities, defaultCity, place, onSave, onClose 
   const [searching, setSearching] = useState(false);
   const [searchNote, setSearchNote] = useState('');
   const [saving, setSaving] = useState(false);
+  const [tagInput, setTagInput] = useState('');
+  const allTags = useRef(getAllTags()).current; // snapshot at open time is fine for suggestions
   const debounceRef = useRef(null);
 
   // Photos: existing (already persisted, for edit mode) + pending (picked
@@ -92,6 +96,26 @@ export default function PlaceForm({ cities, defaultCity, place, onSave, onClose 
       const categories = has ? f.categories.filter((c) => c !== value) : [...f.categories, value];
       return { ...f, categories };
     });
+  }
+
+  function addTag(raw) {
+    const tag = raw.trim().toLowerCase();
+    if (!tag) return;
+    setForm((f) => (f.tags.includes(tag) ? f : { ...f, tags: [...f.tags, tag] }));
+    setTagInput('');
+  }
+
+  function removeTag(tag) {
+    setForm((f) => ({ ...f, tags: f.tags.filter((t) => t !== tag) }));
+  }
+
+  function handleTagKeyDown(e) {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      addTag(tagInput);
+    } else if (e.key === 'Backspace' && tagInput === '' && form.tags.length > 0) {
+      removeTag(form.tags[form.tags.length - 1]);
+    }
   }
 
   function handleFilesSelected(e) {
@@ -210,7 +234,7 @@ export default function PlaceForm({ cities, defaultCity, place, onSave, onClose 
           </div>
 
           <div className="field">
-            <label>Tags (pick as many as fit)</label>
+            <label>Category (pick as many as fit)</label>
             <div className="cat-toggle-row">
               {CATEGORIES.map((c) => (
                 <button
@@ -224,7 +248,35 @@ export default function PlaceForm({ cities, defaultCity, place, onSave, onClose 
                 </button>
               ))}
             </div>
-            {form.categories.length === 0 && <div className="hint">Pick at least one tag.</div>}
+            {form.categories.length === 0 && <div className="hint">Pick at least one category.</div>}
+          </div>
+
+          <div className="field">
+            <label htmlFor="tagInput">Tags (your own — press Enter to add)</label>
+            <input
+              id="tagInput"
+              list="tag-suggestions"
+              placeholder="e.g. daytrip, date night, with kids"
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={handleTagKeyDown}
+              onBlur={() => addTag(tagInput)}
+            />
+            <datalist id="tag-suggestions">
+              {allTags.map((t) => (
+                <option key={t} value={t} />
+              ))}
+            </datalist>
+            {form.tags.length > 0 && (
+              <div className="tag-chip-row">
+                {form.tags.map((t) => (
+                  <span className="tag-chip" key={t}>
+                    #{t}
+                    <button type="button" onClick={() => removeTag(t)} aria-label={`Remove tag ${t}`}>×</button>
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="field">
